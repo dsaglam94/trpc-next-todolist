@@ -37,13 +37,16 @@ export default function Home() {
               quisquam amet quae!
             </p>
           </div>
-          <div className="flex items-center gap-2 justify-end">
-            <button className="py-2 px-4 border border-gray-500 rounded-md text-xs text-gray-500 hover:border-gray-400 hover:text-gray-400">
-              Delete
-            </button>
-            <button className="py-2 px-4 border border-orange-500 rounded-md text-xs text-orange-500  hover:border-orange-400 hover:text-orange-400">
-              Edit
-            </button>
+          <div className="w-full flex items-center justify-between">
+            <button>Done</button>
+            <div className="flex items-center gap-2 justify-end">
+              <button className="py-2 px-4 border border-gray-500 rounded-md text-xs text-gray-500 hover:border-gray-400 hover:text-gray-400">
+                Delete
+              </button>
+              <button className="py-2 px-4 border border-orange-500 rounded-md text-xs text-orange-500  hover:border-orange-400 hover:text-orange-400">
+                Edit
+              </button>
+            </div>
           </div>
         </div>
       </section>
