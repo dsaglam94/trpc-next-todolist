@@ -1,12 +1,44 @@
 import Head from "next/head";
 
 import CreateModal from "../components/CreateModal";
-
-import { DateTime } from "luxon";
+import { prisma } from "../server/utils/prisma";
 import { trpc } from "../utils/trpc";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import type { TodoOutput } from "@/server/routers/_app";
+import { inferAsyncReturnType } from "@trpc/server";
+import TodoItem from "@/components/TodoItem";
+import { HashLoader } from "react-spinners";
 
-export default function Home() {
-  const currentDate = DateTime.now().toLocaleString(DateTime.DATE_MED);
+export type Todo = {
+  id: string;
+  title: string;
+  description: string;
+  completed: boolean;
+  createdAt: Date;
+};
+
+export default function Home({
+  todos,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const { data, isLoading, error } = trpc.getTodos.useQuery();
+
+  if (isLoading) {
+    return (
+      <section className="w-screen h-screen flex items-center justify-center">
+        <HashLoader
+          color="orange"
+          loading={isLoading}
+          size={50}
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
+      </section>
+    );
+  }
+
+  if (error) {
+    return <div>Something happened:{error.message}</div>;
+  }
 
   return (
     <main className="min-h-screen w-full relative">
@@ -25,31 +57,25 @@ export default function Home() {
         </nav>
       </header>
       <section className="w-full max-w-[1400px] flex p-5 bg-gray-900 mx-auto my-10">
-        <div className="max-w-[350px] bg-white/10 flex flex-col gap-5 p-5 rounded-md">
-          <div className="w-full flex items-center justify-between">
-            <h2>My first todo</h2>
-            <span>{currentDate}</span>
-          </div>
-          <div>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque
-              officia, asperiores ipsa nobis quidem sunt distinctio sequi
-              quisquam amet quae!
-            </p>
-          </div>
-          <div className="w-full flex items-center justify-between">
-            <button>Done</button>
-            <div className="flex items-center gap-2 justify-end">
-              <button className="py-2 px-4 border border-gray-500 rounded-md text-xs text-gray-500 hover:border-gray-400 hover:text-gray-400">
-                Delete
-              </button>
-              <button className="py-2 px-4 border border-orange-500 rounded-md text-xs text-orange-500  hover:border-orange-400 hover:text-orange-400">
-                Edit
-              </button>
-            </div>
-          </div>
-        </div>
+        {data?.map((todo: Todo) => {
+          return <TodoItem key={todo.id} {...todo} />;
+        })}
       </section>
     </main>
   );
 }
+
+async function getTodos() {
+  return await prisma.todoItem.findMany({});
+}
+
+type TodosQueryResult = inferAsyncReturnType<typeof getTodos>;
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const response = await getTodos();
+  const todos = JSON.parse(JSON.stringify(response));
+
+  return {
+    props: { todos },
+  };
+};

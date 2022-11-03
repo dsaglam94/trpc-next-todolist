@@ -1,13 +1,23 @@
 import React from "react";
-
 import useDisclosure from "../hooks/useDisclosure";
-
-import { DateTime } from "luxon";
 import { AiOutlineClose } from "react-icons/ai";
+import dayjs from "dayjs";
+import { trpc } from "@/utils/trpc";
 
 const CreateModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const currentDate = DateTime.now().toLocaleString(DateTime.DATE_MED);
+  const now = Date.now();
+  const currentDate = dayjs(now).format("MMM D, h:mm A");
+
+  const todoCreateMutation = trpc.createTodo.useMutation();
+
+  const createTodo = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    todoCreateMutation.mutate({
+      title: "my second todo",
+      description: "it is another test todo description.",
+    });
+  };
 
   return (
     <>
@@ -43,7 +53,10 @@ const CreateModal = () => {
                   className="p-2 w-full rounded-md"
                 />
               </div>
-              <button className="self-end py-2 px-4 border border-green-600 rounded-md text-xs text-green-600  hover:border-green-500 hover:text-green-500">
+              <button
+                onClick={(e) => createTodo(e)}
+                className="self-end py-2 px-4 border border-green-600 rounded-md text-xs text-green-600  hover:border-green-500 hover:text-green-500"
+              >
                 Create
               </button>
             </form>
