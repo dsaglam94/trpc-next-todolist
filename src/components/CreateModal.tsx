@@ -3,12 +3,11 @@ import useDisclosure from "../hooks/useDisclosure";
 import { AiOutlineClose } from "react-icons/ai";
 import dayjs from "dayjs";
 import { trpc } from "@/utils/trpc";
-import { TodosQueryResult } from "@/pages";
 import { useFormik } from "formik";
 import { TodoInput } from "@/server/routers/_app";
 import SuccessModal from "./SuccessModal";
 
-const CreateModal = () => {
+const CreateModal = ({ onCreateTodo }: any) => {
   const createModalDisclosure = useDisclosure();
   const successModalDisclosure = useDisclosure();
 
@@ -19,6 +18,7 @@ const CreateModal = () => {
     onSuccess: () => {
       createModalDisclosure.onClose();
       successModalDisclosure.onOpen();
+      onCreateTodo();
     },
   });
 

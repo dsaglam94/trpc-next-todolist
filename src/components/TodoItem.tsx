@@ -12,8 +12,8 @@ const TodoItem = ({ id, title, description, createdAt, completed }: Todo) => {
     },
   });
 
-  const deleteTodo = async () => {
-    await mutation.mutate({
+  const deleteTodo = () => {
+    mutation.mutate({
       id,
     });
   };
