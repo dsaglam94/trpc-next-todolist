@@ -27,6 +27,20 @@ export const appRouter = router({
       });
       return { success: true, todo: createdTodo };
     }),
+  deleteTodo: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ input: { id } }) => {
+      await prisma.todoItem.delete({
+        where: {
+          id,
+        },
+      });
+      return { deleted: true };
+    }),
 });
 
 // export type definition of API

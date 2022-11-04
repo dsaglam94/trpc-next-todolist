@@ -1,9 +1,22 @@
 import React from "react";
 import type { Todo } from "@/pages/index";
 import dayjs from "dayjs";
+import { trpc } from "@/utils/trpc";
 
 const TodoItem = ({ id, title, description, createdAt, completed }: Todo) => {
   const createDate = dayjs(createdAt).format("MMM D, h:mm A");
+
+  const mutation = trpc.deleteTodo.useMutation({
+    onSuccess: (deleted) => {
+      console.log("item deleted:", deleted);
+    },
+  });
+
+  const deleteTodo = async () => {
+    await mutation.mutate({
+      id,
+    });
+  };
 
   return (
     <div
@@ -23,7 +36,10 @@ const TodoItem = ({ id, title, description, createdAt, completed }: Todo) => {
       <div className="w-full flex items-center justify-between mt-5">
         <button>Done</button>
         <div className="flex items-center gap-2 justify-end">
-          <button className="py-2 px-4 border border-gray-500 rounded-md text-xs text-gray-500 hover:border-gray-400 hover:text-gray-400">
+          <button
+            onClick={deleteTodo}
+            className="py-2 px-4 border border-gray-500 rounded-md text-xs text-gray-500 hover:border-gray-400 hover:text-gray-400"
+          >
             Delete
           </button>
           <button
