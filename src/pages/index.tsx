@@ -1,14 +1,11 @@
 import Head from "next/head";
 
 import CreateModal from "../components/CreateModal";
-import { prisma } from "../server/utils/prisma";
-import { trpc } from "../utils/trpc";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import type { TodoOutput } from "@/server/routers/_app";
-import { inferAsyncReturnType } from "@trpc/server";
 import TodoItem from "@/components/TodoItem";
+
+import { trpc } from "../utils/trpc";
 import { HashLoader } from "react-spinners";
-import { useEffect, useState } from "react";
+import { UseQueryResult } from "@tanstack/react-query";
 
 export type Todo = {
   id: string;
@@ -16,6 +13,10 @@ export type Todo = {
   description: string;
   completed: boolean;
   createdAt: Date;
+};
+
+export type TodoItemProps = Todo & {
+  onDeleteTodo: () => Promise<UseQueryResult>;
 };
 
 export default function Home() {
@@ -57,24 +58,9 @@ export default function Home() {
       </header>
       <section className="w-full max-w-[1400px] flex flex-wrap items-center justify-center gap-5 p-5 bg-gray-900 mx-auto my-10">
         {data?.map((todo: Todo) => {
-          return <TodoItem key={todo.id} {...todo} />;
+          return <TodoItem key={todo.id} {...todo} onDeleteTodo={refetch} />;
         })}
       </section>
     </main>
   );
 }
-
-// async function getTodos() {
-//   return await prisma.todoItem.findMany({});
-// }
-
-// export type TodosQueryResult = inferAsyncReturnType<typeof getTodos>;
-
-// export const getServerSideProps: GetServerSideProps = async () => {
-//   const response = await getTodos();
-//   const todos = JSON.parse(JSON.stringify(response));
-
-//   return {
-//     props: { todos },
-//   };
-// };

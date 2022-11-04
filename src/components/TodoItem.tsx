@@ -1,14 +1,21 @@
 import React from "react";
-import type { Todo } from "@/pages/index";
+import type { TodoItemProps } from "@/pages/index";
 import dayjs from "dayjs";
 import { trpc } from "@/utils/trpc";
 
-const TodoItem = ({ id, title, description, createdAt, completed }: Todo) => {
+const TodoItem = ({
+  id,
+  title,
+  description,
+  createdAt,
+  completed,
+  onDeleteTodo,
+}: TodoItemProps) => {
   const createDate = dayjs(createdAt).format("MMM D, h:mm A");
 
   const mutation = trpc.deleteTodo.useMutation({
-    onSuccess: (deleted) => {
-      console.log("item deleted:", deleted);
+    onSuccess: () => {
+      onDeleteTodo();
     },
   });
 
@@ -42,10 +49,7 @@ const TodoItem = ({ id, title, description, createdAt, completed }: Todo) => {
           >
             Delete
           </button>
-          <button
-            // onClick={createTodo}
-            className="py-2 px-4 border border-orange-500 rounded-md text-xs text-orange-500  hover:border-orange-400 hover:text-orange-400"
-          >
+          <button className="py-2 px-4 border border-orange-500 rounded-md text-xs text-orange-500  hover:border-orange-400 hover:text-orange-400">
             Edit
           </button>
         </div>

@@ -27,7 +27,7 @@ const CreateModal = ({ onCreateTodo }: any) => {
       title: "",
       description: "",
     },
-    onSubmit: (values, { resetForm }) => {
+    onSubmit: (values: TodoInput, { resetForm }) => {
       todoCreateMutation.mutate({
         ...values,
       });
