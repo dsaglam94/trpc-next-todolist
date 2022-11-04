@@ -8,6 +8,7 @@ import type { TodoOutput } from "@/server/routers/_app";
 import { inferAsyncReturnType } from "@trpc/server";
 import TodoItem from "@/components/TodoItem";
 import { HashLoader } from "react-spinners";
+import { useState } from "react";
 
 export type Todo = {
   id: string;
@@ -56,7 +57,7 @@ export default function Home({
           <CreateModal />
         </nav>
       </header>
-      <section className="w-full max-w-[1400px] flex p-5 bg-gray-900 mx-auto my-10">
+      <section className="w-full max-w-[1400px] flex flex-wrap items-center justify-center gap-5 p-5 bg-gray-900 mx-auto my-10">
         {data?.map((todo: Todo) => {
           return <TodoItem key={todo.id} {...todo} />;
         })}
@@ -69,7 +70,7 @@ async function getTodos() {
   return await prisma.todoItem.findMany({});
 }
 
-type TodosQueryResult = inferAsyncReturnType<typeof getTodos>;
+export type TodosQueryResult = inferAsyncReturnType<typeof getTodos>;
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const response = await getTodos();
