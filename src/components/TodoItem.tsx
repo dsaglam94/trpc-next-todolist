@@ -2,6 +2,8 @@ import React from "react";
 import type { TodoItemProps } from "@/pages/index";
 import dayjs from "dayjs";
 import { trpc } from "@/utils/trpc";
+import DeleteModal from "./DeleteModal";
+import useDisclosure from "@/hooks/useDisclosure";
 
 const TodoItem = ({
   id,
@@ -11,6 +13,7 @@ const TodoItem = ({
   completed,
   onDeleteTodo,
 }: TodoItemProps) => {
+  const deleteTodoModal = useDisclosure();
   const createDate = dayjs(createdAt).format("MMM D, h:mm A");
 
   const mutation = trpc.deleteTodo.useMutation({
@@ -44,7 +47,7 @@ const TodoItem = ({
         <button>Done</button>
         <div className="flex items-center gap-2 justify-end">
           <button
-            onClick={deleteTodo}
+            onClick={deleteTodoModal.onOpen}
             className="py-2 px-4 border border-gray-500 rounded-md text-xs text-gray-500 hover:border-gray-400 hover:text-gray-400"
           >
             Delete
@@ -54,6 +57,12 @@ const TodoItem = ({
           </button>
         </div>
       </div>
+      {deleteTodoModal.isOpen && (
+        <DeleteModal
+          onClose={deleteTodoModal.onClose}
+          deleteTodo={deleteTodo}
+        />
+      )}
     </div>
   );
 };
