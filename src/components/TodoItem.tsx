@@ -11,20 +11,33 @@ const TodoItem = ({
   description,
   createdAt,
   completed,
-  onDeleteTodo,
+  onUpdateTodo,
 }: TodoItemProps) => {
   const deleteTodoModal = useDisclosure();
   const createDate = dayjs(createdAt).format("MMM D, h:mm A");
 
-  const mutation = trpc.deleteTodo.useMutation({
+  const deletion = trpc.deleteTodo.useMutation({
     onSuccess: () => {
-      onDeleteTodo();
+      onUpdateTodo();
+    },
+  });
+
+  const completion = trpc.completeTodo.useMutation({
+    onSuccess: () => {
+      onUpdateTodo();
     },
   });
 
   const deleteTodo = () => {
-    mutation.mutate({
+    deletion.mutate({
       id,
+    });
+  };
+
+  const completeTodo = () => {
+    completion.mutate({
+      id,
+      completed,
     });
   };
 
@@ -44,7 +57,7 @@ const TodoItem = ({
         <p>{description}</p>
       </div>
       <div className="w-full flex items-center justify-between mt-5">
-        <button>Done</button>
+        <button onClick={completeTodo}>Done</button>
         <div className="flex items-center gap-2 justify-end">
           <button
             onClick={deleteTodoModal.onOpen}

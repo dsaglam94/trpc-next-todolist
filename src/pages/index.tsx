@@ -16,7 +16,7 @@ export type Todo = {
 };
 
 export type TodoItemProps = Todo & {
-  onDeleteTodo: () => Promise<UseQueryResult>;
+  onUpdateTodo: () => Promise<UseQueryResult>;
 };
 
 export default function Home() {
@@ -58,7 +58,7 @@ export default function Home() {
       </header>
       <section className="w-full max-w-[1400px] flex flex-wrap items-center justify-center gap-5 p-5 bg-gray-900 mx-auto my-10">
         {data?.map((todo: Todo) => {
-          return <TodoItem key={todo.id} {...todo} onDeleteTodo={refetch} />;
+          return <TodoItem key={todo.id} {...todo} onUpdateTodo={refetch} />;
         })}
       </section>
     </main>

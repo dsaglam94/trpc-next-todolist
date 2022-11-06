@@ -41,6 +41,24 @@ export const appRouter = router({
       });
       return { deleted: true };
     }),
+  completeTodo: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        completed: z.boolean(),
+      })
+    )
+    .mutation(async ({ input: { id, completed } }) => {
+      await prisma.todoItem.update({
+        where: {
+          id,
+        },
+        data: {
+          completed: !completed,
+        },
+      });
+      return { completed };
+    }),
 });
 
 // export type definition of API
