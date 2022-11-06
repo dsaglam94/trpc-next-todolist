@@ -3,7 +3,10 @@ import type { TodoItemProps } from "@/pages/index";
 import dayjs from "dayjs";
 import { trpc } from "@/utils/trpc";
 import DeleteModal from "./DeleteModal";
+import EditModal from "./EditModal";
 import useDisclosure from "@/hooks/useDisclosure";
+
+import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
 
 const TodoItem = ({
   id,
@@ -14,42 +17,61 @@ const TodoItem = ({
   onUpdateTodo,
 }: TodoItemProps) => {
   const deleteTodoModal = useDisclosure();
+  const editModal = useDisclosure();
   const createDate = dayjs(createdAt).format("MMM D, h:mm A");
 
-  const deletion = trpc.deleteTodo.useMutation({
+  const todoDeleteMutation = trpc.deleteTodo.useMutation({
     onSuccess: () => {
       onUpdateTodo();
     },
   });
 
-  const completion = trpc.completeTodo.useMutation({
+  const todoCompleteMutation = trpc.completeTodo.useMutation({
     onSuccess: () => {
       onUpdateTodo();
+    },
+  });
+
+  const todoEditMutation = trpc.editTodo.useMutation({
+    onSuccess: (editedTodo) => {
+      editModal.onClose();
+      onUpdateTodo();
+      console.log(editedTodo);
     },
   });
 
   const deleteTodo = () => {
-    deletion.mutate({
+    todoDeleteMutation.mutate({
       id,
     });
   };
 
   const completeTodo = () => {
-    completion.mutate({
+    todoCompleteMutation.mutate({
       id,
       completed,
     });
   };
 
+  const editTodo = (editedTitle: string, editedDescription: string) => {
+    todoEditMutation.mutate({
+      id,
+      title: editedTitle,
+      description: editedDescription,
+    });
+  };
+
   return (
     <div
-      className={
-        completed
-          ? "max-w-[350px] bg-white/10 flex flex-col gap-5 p-5 rounded-md opacity-50"
-          : "max-w-[350px] bg-white/10 flex flex-col gap-5 p-5 rounded-md"
-      }
+      className={"max-w-[350px] bg-white/10 flex flex-col gap-5 p-5 rounded-md"}
     >
-      <div className="w-full flex items-center justify-between gap-10">
+      <div
+        className={
+          completed
+            ? "w-full flex items-center justify-between gap-10 line-through"
+            : "w-full flex items-center justify-between gap-10"
+        }
+      >
         <h2 className="capitalize">{title}</h2>
         <span>{createDate}</span>
       </div>
@@ -57,7 +79,9 @@ const TodoItem = ({
         <p>{description}</p>
       </div>
       <div className="w-full flex items-center justify-between mt-5">
-        <button onClick={completeTodo}>Done</button>
+        <button onClick={completeTodo} aria-label="complete todo">
+          {completed ? <AiOutlineClose /> : <AiOutlineCheck />}
+        </button>
         <div className="flex items-center gap-2 justify-end">
           <button
             onClick={deleteTodoModal.onOpen}
@@ -65,7 +89,10 @@ const TodoItem = ({
           >
             Delete
           </button>
-          <button className="py-2 px-4 border border-orange-500 rounded-md text-xs text-orange-500  hover:border-orange-400 hover:text-orange-400">
+          <button
+            onClick={editModal.onOpen}
+            className="py-2 px-4 border border-orange-500 rounded-md text-xs text-orange-500  hover:border-orange-400 hover:text-orange-400"
+          >
             Edit
           </button>
         </div>
@@ -75,6 +102,9 @@ const TodoItem = ({
           onClose={deleteTodoModal.onClose}
           deleteTodo={deleteTodo}
         />
+      )}
+      {editModal.isOpen && (
+        <EditModal onClose={editModal.onClose} editTodo={editTodo} />
       )}
     </div>
   );
